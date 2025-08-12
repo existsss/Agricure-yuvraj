@@ -1,4 +1,4 @@
-import { FertilizerRecommendation } from "@/services/supabaseClient";
+import { FertilizerRecommendation } from "@/services/mongoClient";
 import { FERTILIZER_INFO, CROP_TYPES, SOIL_TYPES } from "@/services/fertilizerMLService";
 
 export interface EnhancedRecommendation {

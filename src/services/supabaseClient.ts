@@ -1,15 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
+import { MongoClient, Db } from "mongodb";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+const mongoUri = process.env.MONGODB_URI;
+if (!mongoUri) {
+  throw new Error("Missing MongoDB connection string in environment variables");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+let client: MongoClient;
+let db: Db;
 
-// Types for our database tables
+export async function connectDB(): Promise<Db> {
+  if (db) return db; // reuse existing connection
+
+  client = new MongoClient(mongoUri);
+  await client.connect();
+  db = client.db(process.env.MONGODB_DB || "mydatabase"); // replace if needed
+
+  console.log("✅ Connected to MongoDB");
+  return db;
+}
+
+// Types for our database collections
 export interface UserProfile {
   id: string;
   full_name: string;
@@ -42,6 +52,6 @@ export interface FertilizerRecommendation {
   ml_prediction: string;
   confidence_score: number;
   cost_estimate?: string;
-  status: 'pending' | 'applied' | 'scheduled';
+  status: "pending" | "applied" | "scheduled";
   created_at: string;
 }
